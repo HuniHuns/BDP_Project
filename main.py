@@ -8,9 +8,9 @@ def get_hive_connection():
     conn = hive.Connection(
         host="127.0.0.1",
         port=10000,
-        username="maria_dev",        
+        username="hive", # maria_dev 사용자는 권한 이슈가 있어 일단 Super user인 hive로 설정 했습니다.
         database="default",
-        auth='NOSASL'
+        auth='NONE' # 마찬가지로 Super user인 hive는 Auth 규칙이 없어서 NONE으로 바꿨습니다.
     )
     return conn
 
@@ -38,5 +38,6 @@ def query_data():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# 포트는 각 제 로컬에서는 9999가 사용중이지 않아 그냥 9999로 설정했습니다.
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)  # 모든 인터페이스에서 접근 가능
+    app.run(host='0.0.0.0', port=9999)  # 모든 인터페이스에서 접근 가능
