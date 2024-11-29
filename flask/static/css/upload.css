@@ -1,0 +1,91 @@
+.title {
+    font-size: 30px;
+    font-weight: 400;
+}
+
+body {
+    font-family: "Noto Sans KR", sans-serif;
+    text-align: center;
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.drop-zone {
+    width: 500px;
+    height: auto;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #012c5e;
+    font-size: 16px;
+    margin-bottom: 20px;
+    border: 2px solid rgb(14, 70, 116);
+    padding: 15px 20px;
+    box-sizing: border-box;
+}
+
+.upload-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.drop-zone .upload-name {
+    flex: 1;
+    vertical-align: middle;
+    border: 1px solid #dddddd;
+    color: #999999;
+    text-align: left;
+    padding: 10px;
+    overflow: visible;
+    white-space: normal;
+    text-overflow: clip;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.drop-zone label {
+    flex-shrink: 0;
+    border-radius: 10px;
+    text-align: center;
+    padding: 5px;
+    vertical-align: middle;
+    cursor: pointer;
+    border-riadius: 10px;
+    margin-top: 10px;
+    border: 2px solid rgb(75, 75, 75);
+    background-color: #ffffff;
+    box-sizing: border-box;
+}
+
+.drop-zone label:hover {
+    background-color: #aed4f3;
+}
+
+.drop-zone input[type="file"] {
+    display: none;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 40px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    font-size: 16px;
+    border: 2px solid rgb(75, 75, 75);
+    background-color: white;
+}
+
+button:hover {
+    background-color: #aed4f3;
+}

@@ -1,88 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Upload to HDFS</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .drop-zone {
-            width: 100%;
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
-            border: 2px dashed #007bff;
-            border-radius: 10px;
-            text-align: center;
-            color: #007bff;
-            cursor: pointer;
-        }
-        .drop-zone.dragover {
-            background-color: #f0f8ff;
-        }
-    </style>
+    <title>File upload</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
 </head>
+
 <body>
-    <h1 style="text-align: center;">Upload File to HDFS</h1>
-    <div class="drop-zone" id="drop-zone">
-        Drag and drop your file here or click to upload
-        <input type="file" id="file-input" hidden>
-    </div>
-    <script>
-        const dropZone = document.getElementById("drop-zone");
-        const fileInput = document.getElementById("file-input");
+    <p class="title">파일을 선택해주세요</p>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <div class="drop-zone">
 
-        dropZone.addEventListener("click", () => fileInput.click());
-
-        dropZone.addEventListener("dragover", (event) => {
-            event.preventDefault();
-            dropZone.classList.add("dragover");
-        });
-
-        dropZone.addEventListener("dragleave", () => {
-            dropZone.classList.remove("dragover");
-        });
-
-        dropZone.addEventListener("drop", (event) => {
-            event.preventDefault();
-            dropZone.classList.remove("dragover");
-
-            const files = event.dataTransfer.files;
-            if (files.length > 0) {
-                uploadFile(files[0]);
-            }
-        });
-
-        fileInput.addEventListener("change", (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                uploadFile(file);
-            }
-        });
-
-        function uploadFile(file) {
-            const formData = new FormData();
-            formData.append("file", file);
-
-            fetch("/upload", {
-                method: "POST",
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(`Error: ${data.error}`);
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                console.error("Error uploading file:", error);
-                alert("An error occurred while uploading the file.");
-            });
-        }
-    </script>
+            <div class="upload-container">
+                <input type="text" class="upload-name" placeholder="첨부파일" readonly />
+                <label for="fileInput">파일찾기</label>
+            </div>
+            <input type="file" id="fileInput" name="file" multiple style="display: none;" />
+            <p>Drag and drop your file here or click to upload</p>
+        </div>
+        <button type="submit">Upload</button>
+    </form>
+    <script src="{{ url_for('static', filename='scripts/upload.js') }}"></script>
 </body>
+
 </html>
