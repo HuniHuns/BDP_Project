@@ -2,13 +2,14 @@
 - hdfs로 파일 올림(성민님 코드 합치기 완료)
 - hdfs에 올린 파일을 들고와서 입력한 query문으로 spark sql을 실행함
 - 데이터를 api로 개방
+- <b>(추가) flask 이용해서 웹페이지 만들고, ui조작을 통해 hive 쿼리 생성</b> 
 
 ## 실행 방법
 - localhost:5000/upload에 파일 넣고 upload 버튼 누름
 - 자동으로 localhost:5000/query로 이동함
 - 이동 후 sql query문을 입력하고 run query 버튼을 누르면 query의 결과 테이블이 보임
 <br>예시 화면
-![image](https://github.com/user-attachments/assets/a755e2de-c5e6-4f54-9fe7-8007b5030223)
+![image](image.png)
 
 ## 실행단계에서 오류가 발생하는 경우 확인해봐야할 것
 - pyspark가 install되어 있어야함 

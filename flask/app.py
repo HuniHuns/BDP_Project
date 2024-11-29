@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for
 from pyspark.sql import SparkSession
-import reques
+import requests
 from urllib.parse import quote as url_quote
 
 app = Flask(__name__)
