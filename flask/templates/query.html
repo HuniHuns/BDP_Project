@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive SQL Query Builder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #query-builder {
+            margin-bottom: 20px;
+        }
+        select, input[type="text"] {
+            margin: 5px 0;
+            padding: 8px;
+            width: 100%;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        function addCondition() {
+            const column = document.getElementById("columns").value;
+            const operator = document.getElementById("operators").value;
+            const value = document.getElementById("value").value;
+            
+            if (column && operator && value) {
+                const condition = `${column} ${operator} '${value}'`;
+                const currentQuery = document.getElementById("query").value;
+                document.getElementById("query").value = currentQuery 
+                    ? `${currentQuery} AND ${condition}` 
+                    : `WHERE ${condition}`;
+                document.getElementById("value").value = ""; // Clear input
+            } else {
+                alert("Please fill out all fields.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>SQL Query Builder</h1>
+    <div id="query-builder">
+        <label for="columns">Select Column:</label>
+        <select id="columns">
+            <option value="id">ID</option>
+            <option value="name">Name</option>
+            <option value="age">Age</option>
+            <option value="city">City</option>
+        </select>
+
+        <label for="operators">Select Operator:</label>
+        <select id="operators">
+            <option value="=">=</option>
+            <option value=">">></option>
+            <option value="<"><</option>
+            <option value="LIKE">LIKE</option>
+        </select>
+
+        <label for="value">Value:</label>
+        <input type="text" id="value" placeholder="Enter value">
+
+        <button type="button" onclick="addCondition()">Add Condition</button>
+    </div>
+
+    <form method="POST">
+        <label for="query">SQL Query:</label>
+        <textarea name="query" id="query" placeholder="SELECT * FROM table_name;"></textarea>
+        <br>
+        <button type="submit">Run Query</button>
+    </form>
+
+    <div id="results">
+        {% if results %}
+            <h2>Results:</h2>
+            <table border="1">
+                <thead>
+                    <tr>
+                        {% for column in results[0].keys() %}
+                            <th>{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in results %}
+                        <tr>
+                            {% for value in row.values() %}
+                                <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
