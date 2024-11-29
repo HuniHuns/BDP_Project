@@ -7,19 +7,10 @@
 - 결과 csv파일 저장
 - 파일 여러개 올리기 가능 -> join 연산 가능
 
-## 실행 방법
-- localhost:5000/upload에 파일 넣고 upload 버튼 누름
-![alt text](image.png)
-- 자동으로 localhost:5000/query로 이동함
-- 이동 후 sql query문을 입력하고 실행 버튼을 누르면 실행 결과 테이블 + 다운로드 할 수 있는 버튼이 나옴
-![alt text](image-1.png)
-- 다운로드 버튼 누르면 csv 파일 다운
-![alt text](image-2.png)
-
 ## 실행 관련 확인사항
 - /user/maria_dev/term_project 파일에 파일명+id로 저장이 됨
   <br>매일 자정마다 저장된 파일이 자동 삭제됨
-![alt text](image-3.png)
+![image](https://github.com/user-attachments/assets/8dac28a3-114d-41f7-9356-22b0f5376d3d)
 - crontab 실행 방법
 ```bash
 #term_project에 대한 접근 권한 설정해줌
@@ -35,6 +26,16 @@ chmod +x /home/maria_dev/delete_old_files.py
 
 #만약 실행이 안된다면 설치 후 크론탭 제대로 실행되고 있는지 확인 >>sudo yum install cronie
 ```
+
+## 실행 방법
+- localhost:5000/upload에 파일 넣고 upload 버튼 누름
+![image](https://github.com/user-attachments/assets/86fb259a-83eb-4770-aa10-327b794e0b23)
+- 자동으로 localhost:5000/query로 이동함
+- 이동 후 sql query문을 입력하고 실행 버튼을 누르면 실행 결과 테이블 + 다운로드 할 수 있는 버튼이 나옴
+![image](https://github.com/user-attachments/assets/e3b8b4a8-dab5-42ca-b20c-7625bcd4df4f)
+- 다운로드 버튼 누르면 csv 파일 다운
+![image](https://github.com/user-attachments/assets/d0959b4e-491a-4935-80f4-9911fcba9dcd)
+
 
 ## 실행단계에서 오류가 발생하는 경우 확인해봐야할 것
 pyspark가 install되어 있어야함 
