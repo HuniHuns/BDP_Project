@@ -7,9 +7,22 @@
     <title>SQL query</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/query.css') }}">
+    <style>
+        /* 기본적으로 모든 섹션을 숨깁니다 */
+        .sql-section {
+            display: none;
+        }
+
+        /* 활성화된 섹션만 표시합니다 */
+        .sql-section.active {
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
+    <h1>SQL Query Builder</h1>
+
     <p class="title">업로드한 데이터</p>
     <ul class="tables">
         {% for table in tables %}
@@ -17,10 +30,101 @@
         {% endfor %}
     </ul>
 
-    <form method="POST" action="/query">
-        <textarea name="query" rows="5" cols="80" placeholder="Enter your SQL query here" required></textarea><br>
+    <div class="sql-functions">
+        <!-- SQL 함수 선택 버튼 -->
+        <button type="button" onclick="showSection('select-section')" id="select-btn" class="active">SELECT</button>
+        <button type="button" onclick="showSection('delete-section')" id="delete-btn">DELETE</button>
+        <button type="button" onclick="showSection('update-section')" id="update-btn">UPDATE</button>
+        <button type="button" onclick="showSection('insert-section')" id="insert-btn">INSERT</button>
+    </div>
+
+    <form method="POST" action="/query" id="query-form">
+        <!-- SELECT 섹션 -->
+        <div id="select-section" class="sql-section active">
+            <label for="select-columns">SELECT 컬럼:</label>
+            <div id="select-columns-container"></div>
+
+            <label for="from-table">FROM 테이블:</label>
+            <select id="from-table" name="from_table" required>
+                {% for table in tables %}
+                <option value="{{ table }}">{{ table }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- JOIN 설정 -->
+            <div id="join-section">
+                <label for="join-table">JOIN 테이블:</label>
+                <select id="join-table" name="join_table">
+                    <option value="">-- 선택 없음 --</option>
+                    {% for table in tables %}
+                    <option value="{{ table }}">{{ table }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="join-column">JOIN 기준 컬럼:</label>
+                <select id="join-column" name="join_column">
+                    <!-- 동적으로 추가되는 JOIN 기준 컬럼 -->
+                </select>
+            </div>
+
+            <label for="where-condition">WHERE 조건:</label>
+            <input type="text" id="where-condition" name="where_condition" placeholder="e.g., age > 30">
+        </div>
+
+        <!-- DELETE 섹션 -->
+        <div id="delete-section" class="sql-section">
+            <label for="delete-table">DELETE FROM 테이블:</label>
+            <select id="delete-table" name="delete_table" required>
+                {% for table in tables %}
+                <option value="{{ table }}">{{ table }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="delete-condition">WHERE 조건:</label>
+            <input type="text" id="delete-condition" name="delete_condition" placeholder="e.g., id = 1">
+        </div>
+
+        <!-- UPDATE 섹션 -->
+        <div id="update-section" class="sql-section">
+            <label for="update-table">UPDATE 테이블:</label>
+            <select id="update-table" name="update_table" required>
+                {% for table in tables %}
+                <option value="{{ table }}">{{ table }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="update-set">SET 값:</label>
+            <input type="text" id="update-set" name="update_set" placeholder="e.g., age = 25">
+
+            <label for="update-condition">WHERE 조건:</label>
+            <input type="text" id="update-condition" name="update_condition" placeholder="e.g., id = 1">
+        </div>
+
+        <!-- INSERT 섹션 -->
+        <div id="insert-section" class="sql-section">
+            <label for="insert-table">INSERT INTO 테이블:</label>
+            <select id="insert-table" name="insert_table" required>
+                {% for table in tables %}
+                <option value="{{ table }}">{{ table }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="insert-columns">컬럼 이름:</label>
+            <input type="text" id="insert-columns" name="insert_columns" placeholder="e.g., id, name, age">
+
+            <label for="insert-values">값:</label>
+            <input type="text" id="insert-values" name="insert_values" placeholder="e.g., 1, 'John', 25">
+        </div>
+
+        <!-- 최종 쿼리 -->
+        <label for="query">SQL 쿼리:</label>
+        <textarea id="query" name="query" rows="5" cols="80" readonly></textarea><br>
+
+        <!-- 버튼 -->
+        <button type="button" onclick="generateQuery()">쿼리 생성</button>
         <button type="submit">실행</button>
     </form>
+
     {% if query_result %}
     {% if query_result.error %}
     <p style="color: red;">{{ query_result.error }}</p>

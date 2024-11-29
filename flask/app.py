@@ -92,6 +92,23 @@ def query_page():
         return render_template('query.html', tables=tables.keys(), query_result=result.to_dict(orient='records'), download_available=True, download_path=query_file_path)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/get_common_columns')
+def get_common_columns():
+    table1 = request.args.get('table1')
+    table2 = request.args.get('table2')
+    if not table1 or not table2:
+        return jsonify({"error": "Both tables must be provided"}), 400
+
+    try:
+        columns1 = {col['col_name'] for col in spark.sql(f"DESCRIBE {table1}").collect()}
+        columns2 = {col['col_name'] for col in spark.sql(f"DESCRIBE {table2}").collect()}
+        common_columns = list(columns1 & columns2)
+        return jsonify({"common_columns": common_columns})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 
 @app.route('/download', methods=['POST'])
 def download_query_result():
