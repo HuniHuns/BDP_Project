@@ -6,6 +6,8 @@
 - 매일 자정 파일 자동 삭제 - 크론탭 이용(리눅스에서 특정 시간에 자동으로 실행할 수 있도록 하는 도구)
 - 결과 csv파일 저장
 - 파일 여러개 올리기 가능 -> join 연산 가능
+- ui 조작을 통한 query 생성(재훈님 코드 합침)
+- 파일 올리기 및 ui 조작을 동한 query 처리 시 발생하는 예외 처리
 
 ## 실행 관련 확인사항
 - /user/maria_dev/term_project 파일에 파일명+id로 저장이 됨
@@ -31,11 +33,27 @@ chmod +x /home/maria_dev/delete_old_files.py
 - localhost:5000/upload에 파일 넣고 upload 버튼 누름
 ![image](https://github.com/user-attachments/assets/86fb259a-83eb-4770-aa10-327b794e0b23)
 - 자동으로 localhost:5000/query로 이동함
-- 이동 후 sql query문을 입력하고 실행 버튼을 누르면 실행 결과 테이블 + 다운로드 할 수 있는 버튼이 나옴
-![image](https://github.com/user-attachments/assets/e3b8b4a8-dab5-42ca-b20c-7625bcd4df4f)
+![image](https://github.com/user-attachments/assets/ece8af14-5535-4c98-b035-b3000d9c566a)
+- 이동 후 sql query문을 ui 조작을 통해 만들어냄
+  <br>
+  from 테이블 선택 시 select 할 수 있는 컬럼 나옴 -> 아무것도 클릭 안하면 * 로 간주함
+![image](https://github.com/user-attachments/assets/2a55eccd-e630-4683-a2bc-afaf7881373a)
+  <br>
+  join할 테이블 선택 시 초기 -> inner join으로 선택됨
+![image](https://github.com/user-attachments/assets/7446d2cf-9a91-44bc-972e-f6b2f2f9a5ce)
+  <br>
+  outer join 등으로 바꾸면 그에 해당하는 세션이 열림
+![image](https://github.com/user-attachments/assets/f952e372-70c5-4c51-9844-ce107619eadb)
+
+- 쿼리 생성 버튼을 누르면 다운로드 버튼이 나옴
+![image](https://github.com/user-attachments/assets/f35baa87-b702-478e-a263-daef67864562)
+
 - 다운로드 버튼 누르면 csv 파일 다운
 ![image](https://github.com/user-attachments/assets/d0959b4e-491a-4935-80f4-9911fcba9dcd)
 
+## 에러 관련 경고창
+- /upload -> hdfs csv 파일 올리는데 문제 발생하거나 파일을 선택하지 않으면 경고창 뜸
+- /query -> query문 잘못 만들었을 때
 
 ## 실행단계에서 오류가 발생하는 경우 확인해봐야할 것
 pyspark가 install되어 있어야함 
