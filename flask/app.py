@@ -93,7 +93,7 @@ def query_page():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@app.route('/get_common_columns')
+@app.route('/get_common_columns', methods=['GET'])
 def get_common_columns():
     table1 = request.args.get('table1')
     table2 = request.args.get('table2')

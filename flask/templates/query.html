@@ -7,17 +7,6 @@
     <title>SQL query</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/query.css') }}">
-    <style>
-        /* 기본적으로 모든 섹션을 숨깁니다 */
-        .sql-section {
-            display: none;
-        }
-
-        /* 활성화된 섹션만 표시합니다 */
-        .sql-section.active {
-            display: block;
-        }
-    </style>
 </head>
 
 <body>
@@ -29,14 +18,6 @@
         <li>{{ table }}</li>
         {% endfor %}
     </ul>
-
-    <div class="sql-functions">
-        <!-- SQL 함수 선택 버튼 -->
-        <button type="button" onclick="showSection('select-section')" id="select-btn" class="active">SELECT</button>
-        <button type="button" onclick="showSection('delete-section')" id="delete-btn">DELETE</button>
-        <button type="button" onclick="showSection('update-section')" id="update-btn">UPDATE</button>
-        <button type="button" onclick="showSection('insert-section')" id="insert-btn">INSERT</button>
-    </div>
 
     <form method="POST" action="/query" id="query-form">
         <!-- SELECT 섹션 -->
@@ -69,51 +50,6 @@
 
             <label for="where-condition">WHERE 조건:</label>
             <input type="text" id="where-condition" name="where_condition" placeholder="e.g., age > 30">
-        </div>
-
-        <!-- DELETE 섹션 -->
-        <div id="delete-section" class="sql-section">
-            <label for="delete-table">DELETE FROM 테이블:</label>
-            <select id="delete-table" name="delete_table" required>
-                {% for table in tables %}
-                <option value="{{ table }}">{{ table }}</option>
-                {% endfor %}
-            </select>
-
-            <label for="delete-condition">WHERE 조건:</label>
-            <input type="text" id="delete-condition" name="delete_condition" placeholder="e.g., id = 1">
-        </div>
-
-        <!-- UPDATE 섹션 -->
-        <div id="update-section" class="sql-section">
-            <label for="update-table">UPDATE 테이블:</label>
-            <select id="update-table" name="update_table" required>
-                {% for table in tables %}
-                <option value="{{ table }}">{{ table }}</option>
-                {% endfor %}
-            </select>
-
-            <label for="update-set">SET 값:</label>
-            <input type="text" id="update-set" name="update_set" placeholder="e.g., age = 25">
-
-            <label for="update-condition">WHERE 조건:</label>
-            <input type="text" id="update-condition" name="update_condition" placeholder="e.g., id = 1">
-        </div>
-
-        <!-- INSERT 섹션 -->
-        <div id="insert-section" class="sql-section">
-            <label for="insert-table">INSERT INTO 테이블:</label>
-            <select id="insert-table" name="insert_table" required>
-                {% for table in tables %}
-                <option value="{{ table }}">{{ table }}</option>
-                {% endfor %}
-            </select>
-
-            <label for="insert-columns">컬럼 이름:</label>
-            <input type="text" id="insert-columns" name="insert_columns" placeholder="e.g., id, name, age">
-
-            <label for="insert-values">값:</label>
-            <input type="text" id="insert-values" name="insert_values" placeholder="e.g., 1, 'John', 25">
         </div>
 
         <!-- 최종 쿼리 -->
