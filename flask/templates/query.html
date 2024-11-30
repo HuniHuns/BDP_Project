@@ -22,19 +22,17 @@
     <form method="POST" action="/query" id="query-form">
         <!-- SELECT 섹션 -->
         <div id="select-section" class="sql-section active">
-            <label for="select-columns">SELECT 컬럼:</label>
-            <div id="select-columns-container">
-                <input type="checkbox" id="select-all-columns" value="*" name="select_columns">
-                <label for="select-all-columns">All</label>
-                <!-- 동적으로 추가되는 컬럼 -->
-            </div>
-
             <label for="from-table">FROM 테이블:</label>
             <select id="from-table" name="from_table" required>
                 {% for table in tables %}
                 <option value="{{ table }}">{{ table }}</option>
                 {% endfor %}
             </select>
+
+            <label for="select-columns">SELECT 컬럼:</label>
+            <div id="select-columns-container">
+                <!--js에서 동적으로 컬럼 추가(all 포함)-->
+            </div>
 
             <!-- JOIN 설정 -->
             <div id="join-section">

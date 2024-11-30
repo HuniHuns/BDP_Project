@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // join 관련
     const joinTypeSelect = document.getElementById("join-type");
     const joinTableSelect = document.getElementById("join-table");
     const onCheckbox = document.getElementById("on-checkbox");
@@ -13,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
     innerJoinSection.style.display = "none";
     outerJoinSection.style.display = "none";
     naturalJoinSection.style.display = "none";
+    const selectColumnsContainer = document.getElementById("select-columns-container");
+    const selectAllCheckbox = document.getElementById("select-all-columns");
 
     async function fetchCommonColumns() {
         const fromTable = fromTableSelect.value;
@@ -23,6 +26,59 @@ document.addEventListener("DOMContentLoaded", () => {
             return data.common_columns || [];
         }
         return [];
+    }
+    
+    async function updateSelectColumns() {
+        const fromTable = fromTableSelect.value;
+        const columns = await fetchColumns(fromTable);
+
+        selectColumnsContainer.innerHTML = ""; // 기존 컬럼 제거
+        selectAllCheckbox.checked = false; // All 선택 초기화
+
+        // All 옵션 추가
+        const allOption = document.createElement("input");
+        allOption.type = "checkbox";
+        allOption.id = "select-all-columns";
+        allOption.value = "*";
+        allOption.name = "select_columns";
+        selectColumnsContainer.appendChild(allOption);
+
+        const allLabel = document.createElement("label");
+        allLabel.setAttribute("for", "select-all-columns");
+        allLabel.textContent = "All";
+        selectColumnsContainer.appendChild(allLabel);
+
+        // 동적으로 컬럼 추가
+        columns.forEach(column => {
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.value = column;
+            checkbox.name = "select_columns";
+
+            const label = document.createElement("label");
+            label.textContent = column;
+
+            selectColumnsContainer.appendChild(checkbox);
+            selectColumnsContainer.appendChild(label);
+        });
+
+        // All 체크박스 동작 설정
+        allCheckbox.addEventListener("change", () => {
+            const isChecked = allCheckbox.checked;
+            const columnCheckboxes = selectColumnsContainer.querySelectorAll("input[type='checkbox']:not(#select-all-columns)");
+            columnCheckboxes.forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
+        });
+
+        // 개별 컬럼 체크박스 동작 설정
+        const columnCheckboxes = selectColumnsContainer.querySelectorAll("input[type='checkbox']:not(#select-all-columns)");
+        columnCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener("change", () => {
+                const allChecked = Array.from(columnCheckboxes).every(cb => cb.checked);
+                allCheckbox.checked = allChecked;
+            });
+        });
     }
 
     function updateJoinSections() {
@@ -52,13 +108,25 @@ document.addEventListener("DOMContentLoaded", () => {
             selectElement.appendChild(option);
         }
     }
+
     function generateQuery() {
         const fromTable = fromTableSelect.value.trim();
         const joinTable = joinTableSelect.value.trim();
         const joinType = joinTypeSelect.value;
         const whereCondition = document.getElementById("where-condition")?.value.trim() || "";
 
-        let query = `SELECT * FROM ${fromTable}`;
+        let query = `SELECT `;
+
+        // SELECT 컬럼 처리
+        const selectedColumns = Array.from(selectColumnsContainer.querySelectorAll("input[type='checkbox']:checked"))
+            .map(input => input.value);
+        if (selectedColumns.includes("*")) {
+            query += "*";
+        } else {
+            query += selectedColumns.join(", ");
+        }
+        query += ` FROM ${fromTable}`;
+
         if (joinTable) {
             if (joinType === "INNER") {
                 if (onCheckbox.checked) {
@@ -86,6 +154,8 @@ document.addEventListener("DOMContentLoaded", () => {
         queryTextarea.value = query;
         document.getElementById("query").value = query;
         document.getElementById("execute-btn").style.display = "inline-block";
+
+        updateSelectColumns();
     }
 
     joinTableSelect.addEventListener("change", () => {
