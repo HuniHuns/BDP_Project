@@ -39,6 +39,9 @@ def upload_to_hdfs():
         if file.filename == '':
             continue
 
+        if not file.filename.lower().endswith('.csv'):
+            return render_template('upload.html', tables=tables.keys(), error_message="CSV 파일만 업로드할 수 있습니다")
+        
         unique_id = f"{int(time.time())}_{random.randint(1000, 9999)}"
         unique_filename = f"{file.filename.split('.')[0]}_{unique_id}.csv"
         hdfs_path = f"{HDFS_UPLOAD_DIR}/{unique_filename}"
