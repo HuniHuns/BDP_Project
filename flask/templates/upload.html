@@ -1,28 +1,34 @@
-<!DOCTYPE html>
-<html>
+<!DCTYPE html>
+    <html>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File upload</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>File upload</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
+    </head>
 
-<body>
-    <p class="title">파일을 선택해주세요</p>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <div class="drop-zone">
+    <body>
+        <p class="title">파일을 선택해주세요</p>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="drop-zone">
 
-            <div class="upload-container">
-                <input type="text" class="upload-name" placeholder="첨부파일" readonly />
-                <label for="fileInput">파일찾기</label>
+                <div class="upload-container">
+                    <input type="text" class="upload-name" placeholder="첨부파일" readonly />
+                    <label for="fileInput">파일찾기</label>
+                </div>
+                <input type="file" id="fileInput" name="file" multiple style="display: none;" />
+                <p>Drag and drop your file here or click to upload</p>
             </div>
-            <input type="file" id="fileInput" name="file" multiple style="display: none;" />
-            <p>Drag and drop your file here or click to upload</p>
-        </div>
-        <button type="submit">Upload</button>
-    </form>
-    <script src="{{ url_for('static', filename='scripts/upload.js') }}"></script>
-</body>
+            <button type="submit">Upload</button>
+        </form>
+        {% if error_message %}
+        <script type="text/javascript">
+            alert("{{ error_message }}");
+        </script>
+        {% endif %}
 
-</html>
+        <script src="{{ url_for('static', filename='scripts/upload.js') }}"></script>
+    </body>
+
+    </html>

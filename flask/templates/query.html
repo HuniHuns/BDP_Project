@@ -45,14 +45,14 @@
                     <option value="{{ table }}">{{ table }}</option>
                     {% endfor %}
                 </select>
-                
+
                 <label for="join-type">JOIN 유형:</label>
                 <select id="join-type" name="join_type">
                     <option value="INNER">INNER JOIN</option>
                     <option value="OUTER">OUTER JOIN</option>
                     <option value="NATURAL">NATURAL JOIN</option>
                 </select>
-            
+
                 <!-- INNER JOIN 섹션 -->
                 <div id="inner-join-section">
                     <label>
@@ -65,7 +65,7 @@
                         </select>
                     </div>
                 </div>
-            
+
                 <!-- OUTER JOIN 섹션 -->
                 <div id="outer-join-section">
                     <label for="outer-join-type">OUTER JOIN 유형:</label>
@@ -79,20 +79,25 @@
                         <!-- 동적으로 추가 -->
                     </select>
                 </div>
-            
+
                 <!-- NATURAL JOIN 섹션 -->
                 <div id="natural-join-section">
                 </div>
             </div>
+            <!-- 최종 쿼리 -->
+            <label for="query">SQL 쿼리:</label>
+            <textarea id="query" name="query" rows="5" cols="80" readonly></textarea><br>
 
-        <!-- 최종 쿼리 -->
-        <label for="query">SQL 쿼리:</label>
-        <textarea id="query" name="query" rows="5" cols="80" readonly></textarea><br>
-
-        <!-- 버튼 -->
-        <button type="button" onclick="generateQuery()">쿼리 생성</button>
-        <button type="submit">실행</button>
+            <!-- 버튼 -->
+            <button type="button" onclick="generateQuery()">쿼리 생성</button>
+            <button type="submit" id="execute-btn" style="display:none;">실행</button>
     </form>
+
+    {% if error_message %}
+    <script type="text/javascript">
+        alert("{{ error_message }}");
+    </script>
+    {% endif %}
 
     {% if query_result %}
     {% if query_result.error %}
@@ -120,6 +125,7 @@
     {% endif %}
     {% endif %}
     <script src="{{ url_for('static', filename='scripts/download.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/query.js') }}"></script>
 </body>
 
 </html>
