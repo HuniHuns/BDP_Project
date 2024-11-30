@@ -38,6 +38,14 @@
 
             <!-- JOIN 설정 -->
             <div id="join-section">
+                <label for="join-table">JOIN 테이블:</label>
+                <select id="join-table" name="join_table" required>
+                    <option value="">-- 선택 --</option>
+                    {% for table in tables %}
+                    <option value="{{ table }}">{{ table }}</option>
+                    {% endfor %}
+                </select>
+                
                 <label for="join-type">JOIN 유형:</label>
                 <select id="join-type" name="join_type">
                     <option value="INNER">INNER JOIN</option>

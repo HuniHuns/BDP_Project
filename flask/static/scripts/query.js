@@ -1,21 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
     const joinTypeSelect = document.getElementById("join-type");
+    const joinTableSelect = document.getElementById("join-table");
     const onCheckbox = document.getElementById("on-checkbox");
     const innerJoinSection = document.getElementById("inner-join-section");
     const outerJoinSection = document.getElementById("outer-join-section");
     const naturalJoinSection = document.getElementById("natural-join-section");
-    const outerJoinColumnSelect = document.getElementById("outer-join-column");
     const innerJoinColumnSelect = document.getElementById("inner-join-column");
+    const outerJoinColumnSelect = document.getElementById("outer-join-column");
     const queryTextarea = document.getElementById("query");
     const fromTableSelect = document.getElementById("from-table");
-    const joinTableSelect = document.getElementById("join-table");
     const outerJoinTypeSelect = document.getElementById("outer-join-type");
-    const whereConditionInput = document.getElementById("where-condition");
 
-    // Fetch common columns between tables
+    // Fetch common columns between FROM and JOIN tables
     async function fetchCommonColumns() {
         const fromTable = fromTableSelect.value;
-        const joinTable = joinTableSelect?.value || ""; // Check for joinTable existence
+        const joinTable = joinTableSelect.value;
 
         if (fromTable && joinTable) {
             const response = await fetch(`/get_common_columns?table1=${fromTable}&table2=${joinTable}`);
@@ -25,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return [];
     }
 
-    // Update the display of join sections based on selected join type
+    // Update join sections visibility
     function updateJoinSections() {
         const joinType = joinTypeSelect.value;
         innerJoinSection.style.display = joinType === "INNER" ? "block" : "none";
@@ -33,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
         naturalJoinSection.style.display = joinType === "NATURAL" ? "block" : "none";
     }
 
-    // Populate common columns dynamically
+    // Populate columns dynamically in dropdowns
     async function updateCommonColumns(selectElement) {
         const commonColumns = await fetchCommonColumns();
         selectElement.innerHTML = ""; // Clear options
@@ -52,12 +51,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Generate SQL query based on user input
+    // Generate the SQL query
     function generateQuery() {
         const fromTable = fromTableSelect.value.trim();
-        const joinTable = joinTableSelect?.value.trim() || ""; // Check for joinTable existence
+        const joinTable = joinTableSelect.value.trim();
         const joinType = joinTypeSelect.value;
-        const whereCondition = whereConditionInput?.value.trim() || "";
+        const whereCondition = document.getElementById("where-condition")?.value.trim() || "";
 
         let query = `SELECT * FROM ${fromTable}`;
         if (joinTable) {
@@ -68,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         query += ` JOIN ${joinTable} ON ${fromTable}.${innerJoinColumn} = ${joinTable}.${innerJoinColumn}`;
                     }
                 } else {
-                    query += ` JOIN ${joinTable}`; // No ON condition for INNER JOIN
+                    query += ` JOIN ${joinTable}`;
                 }
             } else if (joinType === "OUTER") {
                 const outerJoinType = outerJoinTypeSelect.value;
@@ -84,25 +83,18 @@ document.addEventListener("DOMContentLoaded", () => {
             query += ` WHERE ${whereCondition}`;
         }
 
-        // Handle edge cases where query is invalid
-        if (!fromTable) {
-            query = "Error: FROM table is required.";
-        }
-
         queryTextarea.value = query;
     }
 
-    // Add event listeners
-    joinTypeSelect.addEventListener("change", () => {
-        updateJoinSections();
-        if (outerJoinColumnSelect) updateCommonColumns(outerJoinColumnSelect); // Dynamically update common columns
+    // Event listeners
+    joinTypeSelect.addEventListener("change", updateJoinSections);
+    joinTableSelect.addEventListener("change", () => {
+        updateCommonColumns(innerJoinColumnSelect);
+        updateCommonColumns(outerJoinColumnSelect);
+    });
+    onCheckbox.addEventListener("change", () => {
+        document.getElementById("on-condition").style.display = onCheckbox.checked ? "block" : "none";
     });
 
-    if (onCheckbox) {
-        onCheckbox.addEventListener("change", () => {
-            document.getElementById("on-condition").style.display = onCheckbox.checked ? "block" : "none";
-        });
-    }
-
-    window.generateQuery = generateQuery; // Expose generateQuery to global scope
+    window.generateQuery = generateQuery;
 });
