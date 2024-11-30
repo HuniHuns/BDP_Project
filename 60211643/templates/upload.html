@@ -22,6 +22,12 @@
             </div>
             <button type="submit">Upload</button>
         </form>
+        {% if error_message %}
+        <script type="text/javascript">
+            alert("{{ error_message }}");
+        </script>
+        {% endif %}
+
         <script src="{{ url_for('static', filename='scripts/upload.js') }}"></script>
     </body>
 

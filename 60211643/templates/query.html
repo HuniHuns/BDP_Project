@@ -4,12 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQL query</title />
+    <title>SQL query</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/query.css') }}">
 </head>
 
 <body>
+    <h1>SQL Query Builder</h1>
+
     <p class="title">업로드한 데이터</p>
     <ul class="tables">
         {% for table in tables %}
@@ -17,10 +19,86 @@
         {% endfor %}
     </ul>
 
-    <form method="POST" action="/query">
-        <textarea name="query" rows="5" cols="80" placeholder="Enter your SQL query here" required></textarea><br>
-        <button type="submit">실행</button>
+    <form method="POST" action="/query" id="query-form">
+        <!-- SELECT 섹션 -->
+        <div id="select-section" class="sql-section active">
+            <label for="select-columns">SELECT 컬럼:</label>
+            <div id="select-columns-container">
+                <input type="checkbox" id="select-all-columns" value="*" name="select_columns">
+                <label for="select-all-columns">All</label>
+                <!-- 동적으로 추가되는 컬럼 -->
+            </div>
+
+            <label for="from-table">FROM 테이블:</label>
+            <select id="from-table" name="from_table" required>
+                {% for table in tables %}
+                <option value="{{ table }}">{{ table }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- JOIN 설정 -->
+            <div id="join-section">
+                <label for="join-table">JOIN 테이블:</label>
+                <select id="join-table" name="join_table" required>
+                    <option value="">-- 선택 --</option>
+                    {% for table in tables %}
+                    <option value="{{ table }}">{{ table }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="join-type">JOIN 유형:</label>
+                <select id="join-type" name="join_type">
+                    <option value="INNER">INNER JOIN</option>
+                    <option value="OUTER">OUTER JOIN</option>
+                    <option value="NATURAL">NATURAL JOIN</option>
+                </select>
+
+                <!-- INNER JOIN 섹션 -->
+                <div id="inner-join-section">
+                    <label>
+                        <input type="checkbox" id="on-checkbox"> ON 조건 설정
+                    </label>
+                    <div id="on-condition">
+                        <label for="inner-join-column">기준 컬럼:</label>
+                        <select id="inner-join-column" name="inner_join_column">
+                            <!-- 동적으로 추가 -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- OUTER JOIN 섹션 -->
+                <div id="outer-join-section">
+                    <label for="outer-join-type">OUTER JOIN 유형:</label>
+                    <select id="outer-join-type" name="outer_join_type">
+                        <option value="LEFT">LEFT</option>
+                        <option value="RIGHT">RIGHT</option>
+                        <option value="FULL">FULL</option>
+                    </select>
+                    <label for="outer-join-column">기준 컬럼:</label>
+                    <select id="outer-join-column" name="outer_join_column">
+                        <!-- 동적으로 추가 -->
+                    </select>
+                </div>
+
+                <!-- NATURAL JOIN 섹션 -->
+                <div id="natural-join-section">
+                </div>
+            </div>
+            <!-- 최종 쿼리 -->
+            <label for="query">SQL 쿼리:</label>
+            <textarea id="query" name="query" rows="5" cols="80" readonly></textarea><br>
+
+            <!-- 버튼 -->
+            <button type="button" onclick="generateQuery()">쿼리 생성</button>
+            <button type="submit" id="execute-btn" style="display:none;">실행</button>
     </form>
+
+    {% if error_message %}
+    <script type="text/javascript">
+        alert("{{ error_message }}");
+    </script>
+    {% endif %}
+
     {% if query_result %}
     {% if query_result.error %}
     <p style="color: red;">{{ query_result.error }}</p>
@@ -47,6 +125,7 @@
     {% endif %}
     {% endif %}
     <script src="{{ url_for('static', filename='scripts/download.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/query.js') }}"></script>
 </body>
 
 </html>
