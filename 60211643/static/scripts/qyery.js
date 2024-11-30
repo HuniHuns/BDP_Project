@@ -1,3 +1,8 @@
+async function fetchColumns(table) {
+    const response = await fetch(`/get_columns?table=${table}`);
+    const data = await response.json();
+    return data.columns || [];
+}
 document.addEventListener("DOMContentLoaded", () => {
     const joinTypeSelect = document.getElementById("join-type");
     const joinTableSelect = document.getElementById("join-table");
@@ -10,6 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const queryTextarea = document.getElementById("query");
     const fromTableSelect = document.getElementById("from-table");
     const outerJoinTypeSelect = document.getElementById("outer-join-type");
+
+    const selectColumnsContainer = document.getElementById("select-columns-container");
+    const selectAllCheckbox = document.getElementById("select-all-columns");
     innerJoinSection.style.display = "none";
     outerJoinSection.style.display = "none";
     naturalJoinSection.style.display = "none";
@@ -23,6 +31,54 @@ document.addEventListener("DOMContentLoaded", () => {
             return data.common_columns || [];
         }
         return [];
+    }
+
+    async function updateSelectColumns() {
+        const fromTable = fromTableSelect.value;
+        const columns = await fetchColumns(fromTable);
+
+        selectColumnsContainer.innerHTML = "";
+        if (selectAllCheckbox) {
+            selectAllCheckbox.checked = false;
+        }
+
+        const allOption = document.createElement("input");
+        allOption.type = "checkbox";
+        allOption.id = "select-all-columns";
+        allOption.value = "*";
+        allOption.name = "select_columns";
+        selectColumnsContainer.appendChild(allOption);
+
+        const allLabel = document.createElement("label");
+        allLabel.setAttribute("for", "select-all-columns");
+        allLabel.textContent = "All";
+        selectColumnsContainer.appendChild(allLabel);
+
+        columns.forEach(column => {
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.value = column;
+            checkbox.name = "select_columns";
+            const label = document.createElement("label");
+            label.textContent = column;
+            selectColumnsContainer.appendChild(checkbox);
+            selectColumnsContainer.appendChild(label);
+        });
+        selectAllCheckbox.addEventListener("change", () => {
+            const isChecked = selectAllCheckbox.checked;
+            const columnCheckboxes = selectColumnsContainer.querySelectorAll("input[type='checkbox']:not(#select-all-columns)");
+            columnCheckboxes.forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
+        });
+
+        const columnCheckboxes = selectColumnsContainer.querySelectorAll("input[type='checkbox']:not(#select-all-columns)");
+        columnCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener("change", () => {
+                const allChecked = Array.from(columnCheckboxes).every(cb => cb.checked);
+                selectAllCheckbox.checked = allChecked;
+            });
+        });
     }
 
     function updateJoinSections() {
@@ -58,7 +114,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const joinType = joinTypeSelect.value;
         const whereCondition = document.getElementById("where-condition")?.value.trim() || "";
 
-        let query = `SELECT * FROM ${fromTable}`;
+        let query = `SELECT `;
+        const selectedColumns = Array.from(selectColumnsContainer.querySelectorAll("input[type='checkbox']:checked"))
+            .map(input => input.value);
+        if (selectedColumns.length === 0) {
+            query += "*";
+        } else if (selectedColumns.includes("*")) {
+            query += "*";
+        } else {
+            query += selectedColumns.join(", ");
+        }
+        query += ` FROM ${fromTable}`;
+
         if (joinTable) {
             if (joinType === "INNER") {
                 if (onCheckbox.checked) {
@@ -86,7 +153,17 @@ document.addEventListener("DOMContentLoaded", () => {
         queryTextarea.value = query;
         document.getElementById("query").value = query;
         document.getElementById("execute-btn").style.display = "inline-block";
+
+        updateSelectColumns();
     }
+
+    fromTableSelect.addEventListener("change", function () {
+        updateSelectColumns();
+    });
+
+    joinTableSelect.addEventListener("change", function () {
+        updateSelectColumns();
+    });
 
     joinTableSelect.addEventListener("change", () => {
         if (joinTableSelect.value) {

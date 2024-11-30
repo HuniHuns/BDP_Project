@@ -24,13 +24,11 @@
         <div id="select-section" class="sql-section active">
             <label for="select-columns">SELECT 컬럼:</label>
             <div id="select-columns-container">
-                <input type="checkbox" id="select-all-columns" value="*" name="select_columns">
-                <label for="select-all-columns">All</label>
-                <!-- 동적으로 추가되는 컬럼 -->
             </div>
 
             <label for="from-table">FROM 테이블:</label>
             <select id="from-table" name="from_table" required>
+                <option value="">-- 선택 --</option>
                 {% for table in tables %}
                 <option value="{{ table }}">{{ table }}</option>
                 {% endfor %}

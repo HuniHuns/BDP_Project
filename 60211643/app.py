@@ -94,7 +94,20 @@ def query_page():
     except pyspark.sql.utils.AnalysisException as e:
         error_message = str(e)
         return render_template('query.html', tables=tables.keys(), error_message=error_message, query_result=None, download_available=False)
+    
+@app.route('/get_columns', methods=['GET'])
+def get_columns():
+    table = request.args.get('table')
+    if not table:
+        return jsonify({"error": "Table name must be provided"}), 400
 
+    try:
+        # Spark SQL을 사용하여 컬럼 가져오기
+        columns = [col['col_name'] for col in spark.sql(f"DESCRIBE {table}").collect()]
+        return jsonify({"columns": columns})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 @app.route('/get_common_columns', methods=['GET'])
 def get_common_columns():
     table1 = request.args.get('table1')
