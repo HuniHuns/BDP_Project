@@ -23,7 +23,11 @@
         <!-- SELECT 섹션 -->
         <div id="select-section" class="sql-section active">
             <label for="select-columns">SELECT 컬럼:</label>
-            <div id="select-columns-container"></div>
+            <div id="select-columns-container">
+                <input type="checkbox" id="select-all-columns" value="*" name="select_columns">
+                <label for="select-all-columns">All</label>
+                <!-- 동적으로 추가되는 컬럼 -->
+            </div>
 
             <label for="from-table">FROM 테이블:</label>
             <select id="from-table" name="from_table" required>
@@ -34,23 +38,44 @@
 
             <!-- JOIN 설정 -->
             <div id="join-section">
-                <label for="join-table">JOIN 테이블:</label>
-                <select id="join-table" name="join_table">
-                    <option value="">-- 선택 없음 --</option>
-                    {% for table in tables %}
-                    <option value="{{ table }}">{{ table }}</option>
-                    {% endfor %}
+                <label for="join-type">JOIN 유형:</label>
+                <select id="join-type" name="join_type">
+                    <option value="INNER">INNER JOIN</option>
+                    <option value="OUTER">OUTER JOIN</option>
+                    <option value="NATURAL">NATURAL JOIN</option>
                 </select>
-
-                <label for="join-column">JOIN 기준 컬럼:</label>
-                <select id="join-column" name="join_column">
-                    <!-- 동적으로 추가되는 JOIN 기준 컬럼 -->
-                </select>
+            
+                <!-- INNER JOIN 섹션 -->
+                <div id="inner-join-section">
+                    <label>
+                        <input type="checkbox" id="on-checkbox"> ON 조건 설정
+                    </label>
+                    <div id="on-condition">
+                        <label for="inner-join-column">기준 컬럼:</label>
+                        <select id="inner-join-column" name="inner_join_column">
+                            <!-- 동적으로 추가 -->
+                        </select>
+                    </div>
+                </div>
+            
+                <!-- OUTER JOIN 섹션 -->
+                <div id="outer-join-section">
+                    <label for="outer-join-type">OUTER JOIN 유형:</label>
+                    <select id="outer-join-type" name="outer_join_type">
+                        <option value="LEFT">LEFT</option>
+                        <option value="RIGHT">RIGHT</option>
+                        <option value="FULL">FULL</option>
+                    </select>
+                    <label for="outer-join-column">기준 컬럼:</label>
+                    <select id="outer-join-column" name="outer_join_column">
+                        <!-- 동적으로 추가 -->
+                    </select>
+                </div>
+            
+                <!-- NATURAL JOIN 섹션 -->
+                <div id="natural-join-section">
+                </div>
             </div>
-
-            <label for="where-condition">WHERE 조건:</label>
-            <input type="text" id="where-condition" name="where_condition" placeholder="e.g., age > 30">
-        </div>
 
         <!-- 최종 쿼리 -->
         <label for="query">SQL 쿼리:</label>
