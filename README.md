@@ -1,13 +1,14 @@
 ## 진행 상황
-- hdfs로 파일 올림(성민님 코드 합치기 완료)
-- hdfs에 올린 파일을 들고와서 입력한 query문으로 spark sql을 실행함
-- 데이터를 api로 개방
-- 같은 이름 파일 저장되는 것 처리 -> 현재시간 + random number을 통해 unique한 id를 만들어줘 파일 이름 + id로 저장되게 해줌
-- 매일 자정 파일 자동 삭제 - 크론탭 이용(리눅스에서 특정 시간에 자동으로 실행할 수 있도록 하는 도구)
-- 결과 csv파일 저장
-- 파일 여러개 올리기 가능 -> join 연산 가능
-- ui 조작을 통한 query 생성(재훈님 코드 합침)
-- 파일 올리기 및 ui 조작을 동한 query 처리 시 발생하는 예외 처리
+- ec2에 환경 설정함. -> port foward, web server 구축 등.
+- public ip => `3.83.214.76`, 아직 서버 안켜서 `404` 뜨는게 정상. 아직 안킨 이유는 아래 spark error때문에 안킴
+- hdfs로 파일 올림(connection abort error 해결)
+```python
+df = spark.read.option("header", "true") \
+            .option("inferSchema", "true") \
+            .csv(hdfs_file_path)
+```킴
+- 위 부분에서 no live node error 발생 -> 해결중
+
 
 ## 실행 관련 확인사항
 - /user/maria_dev/term_project 파일에 파일명+id로 저장이 됨
