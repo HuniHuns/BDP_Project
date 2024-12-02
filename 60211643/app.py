@@ -76,17 +76,15 @@ def upload_to_hdfs():
             print(data, redirect_url)
             response = requests.put(redirect_url, data=data, headers={
                                     "Content-Type": "application/octet-stream"})
-            print(response)
             if response.status_code != 201:
                 return render_template('upload.html', tables=tables.keys(), error_message="HDFS에 파일 업로드 실패")
-        print('uploaded')
-        # Hive 테이블 생성
+        
         table_name = file.filename.split('.')[0]
         hdfs_file_path = f"hdfs://localhost:8020/user/maria_dev/term_project/{unique_filename}"
         df = spark.read.option("header", "true") \
             .option("inferSchema", "true") \
             .csv(hdfs_file_path)
-        print("File read successfully from HDFS.")
+        
         df = df.dropDuplicates()
         df.createOrReplaceTempView(table_name)
         if table_name not in tables:
