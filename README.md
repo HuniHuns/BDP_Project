@@ -2,12 +2,8 @@
 - ec2에 환경 설정함. -> port foward, web server 구축 등.
 - public ip => `3.83.214.76`, 아직 서버 안켜서 `404` 뜨는게 정상. 아직 안킨 이유는 아래 spark error때문에 안킴
 - hdfs로 파일 올림(connection abort error 해결)
-```python
-df = spark.read.option("header", "true") \
-            .option("inferSchema", "true") \
-            .csv(hdfs_file_path)
-```킴
-- 위 부분에서 no live node error 발생 -> 해결중
+- 위 부분에서 no live node error 발생 -> 해결
+- query page 수정중
 
 
 ## 실행 관련 확인사항
