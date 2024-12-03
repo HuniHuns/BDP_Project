@@ -67,7 +67,8 @@ def upload_to_hdfs():
             return render_template('upload.html', tables=tables.keys(), error_message="HDFS에 파일 업로드 실패")
         file_content = data.decode('utf-8')
         rdd = spark.sparkContext.parallelize(file_content.splitlines())
-        df = spark.read.option("header", "true").csv(rdd)
+        df = spark.read.option("header", "true").option(
+            "inferSchema", "true").csv(rdd)
         table_name = file.filename.split('.')[0]
         df = df.dropDuplicates()
         df.createOrReplaceTempView(table_name)
