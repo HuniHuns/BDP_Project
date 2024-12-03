@@ -24,6 +24,8 @@ if not os.path.exists(QUERY_RESULT_DIR):
     os.makedirs(QUERY_RESULT_DIR)
 # 테이블 관리
 tables = {}
+
+
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_to_hdfs():
     """파일 업로드 및 Hive 테이블 생성"""
@@ -84,7 +86,7 @@ def query_page():
     query_file_path = None
     download_available = False
     error_message = None
-
+    print(tables.keys())
     if request.method == 'GET':
         return render_template('query.html', tables=tables.keys(), query_result=query_result, download_available=False, error_message=error_message)
 
@@ -104,6 +106,40 @@ def query_page():
                                download_available=True, download_path=query_file_path, error_message=error_message)
     except Exception as e:
         return render_template('query.html', tables=tables.keys(), query_result=None, download_available=False, error_message=str(e))
+
+
+@app.route('/get_columns', methods=['GET'])
+def get_columns():
+    table = request.args.get('table')
+    if not table:
+        return jsonify({"error": "Table name must be provided"}), 400
+
+    try:
+        # Spark SQL을 사용하여 컬럼 가져오기
+        columns = [col['col_name']
+                   for col in spark.sql(f"DESCRIBE {table}").collect()]
+        return jsonify({"columns": columns})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/get_common_columns', methods=['GET'])
+def get_common_columns():
+    table1 = request.args.get('table1')
+    table2 = request.args.get('table2')
+    error_message = None
+    if not table1 or not table2:
+        return jsonify({"error": "Both tables must be provided"}), 400
+
+    try:
+        columns1 = {col['col_name']
+                    for col in spark.sql(f"DESCRIBE {table1}").collect()}
+        columns2 = {col['col_name']
+                    for col in spark.sql(f"DESCRIBE {table2}").collect()}
+        common_columns = list(columns1 & columns2)
+        return jsonify({"common_columns": common_columns})
+    except Exception as e:
+        return render_template('query.html', tables=tables.keys(), error_message=error_message, query_result=None, download_available=False)
 
 
 @app.route('/download', methods=['POST'])
