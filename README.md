@@ -8,6 +8,7 @@
 - 파일 여러개 올리기 가능 -> join 연산 가능
 - ui 조작을 통한 query 생성(재훈님 코드 합침)
 - 파일 올리기 및 ui 조작을 동한 query 처리 시 발생하는 예외 처리
+- query문 생성 수정 -> 별칭 생성이 되지 않아 쿼리문 오류 발생하는 것 관련 해결
 
 ## 실행 관련 확인사항
 - /user/maria_dev/term_project 파일에 파일명+id로 저장이 됨
@@ -30,26 +31,51 @@ chmod +x /home/maria_dev/delete_old_files.py
 ```
 
 ## 실행 방법
-- localhost:5000/upload에 파일 넣고 upload 버튼 누름
+#### 1. localhost:5000/upload에 파일 넣고 upload 버튼 누름
 ![image](https://github.com/user-attachments/assets/86fb259a-83eb-4770-aa10-327b794e0b23)
-- 자동으로 localhost:5000/query로 이동함
+
+#### 2. 자동으로 localhost:5000/query로 이동함
 ![image](https://github.com/user-attachments/assets/ece8af14-5535-4c98-b035-b3000d9c566a)
-- 이동 후 sql query문을 ui 조작을 통해 만들어냄
-  <br>
-  from 테이블 선택 시 select 할 수 있는 컬럼 나옴 -> 아무것도 클릭 안하면 * 로 간주함
+
+#### 3. 이동 후 sql query문을 ui 조작을 통해 만들어냄
+  - from 테이블 선택 시 select 할 수 있는 컬럼 나옴 -> 아무것도 클릭 안하면 * 로 간주함
 ![image](https://github.com/user-attachments/assets/2a55eccd-e630-4683-a2bc-afaf7881373a)
-  <br>
-  join할 테이블 선택 시 초기 -> inner join으로 선택됨
+  - join할 테이블 선택 시 초기 -> inner join으로 선택됨
 ![image](https://github.com/user-attachments/assets/7446d2cf-9a91-44bc-972e-f6b2f2f9a5ce)
-  <br>
-  outer join 등으로 바꾸면 그에 해당하는 세션이 열림
+  - outer join 등으로 바꾸면 그에 해당하는 세션이 열림
 ![image](https://github.com/user-attachments/assets/f952e372-70c5-4c51-9844-ce107619eadb)
 
-- 쿼리 생성 버튼을 누르면 다운로드 버튼이 나옴
-![image](https://github.com/user-attachments/assets/f35baa87-b702-478e-a263-daef67864562)
+#### 3-1 쿼리 생성 진행 및 실행
+- 기본 select문 쿼리 생성 및 실행
+<table>
+  <tr>
+    <th>쿼리 생성</th>
+    <th>쿼리 실행</th>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/753fa04a-ec5d-4a77-b7c3-9d7ec1747235" alt="쿼리 생성 이미지"></td>
+    <td><img src="https://github.com/user-attachments/assets/6fcab694-ecd3-4b41-a131-b2929b1bbd99" alt="쿼리 실행 이미지"></td>
+  </tr>
+</table>
 
-- 다운로드 버튼 누르면 csv 파일 다운
-![image](https://github.com/user-attachments/assets/d0959b4e-491a-4935-80f4-9911fcba9dcd)
+
+- join 생성 및 실행 -> join문이 실행될 때는 별칭이 생성됨
+<table>
+  <tr>
+    <th>쿼리 생성</th>
+    <th>쿼리 실행</th>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://github.com/user-attachments/assets/9e38f373-d68c-4871-91ee-2a49af528e60" alt="쿼리 생성 이미지" width="1400">
+    </td>
+    <td><img src="https://github.com/user-attachments/assets/ef6b2b55-ce2a-4b02-837d-966a0a360d2f" alt="쿼리 실행 이미지"></td>
+  </tr>
+</table>
+
+
+#### 3-2 다운로드 버튼 누르면 csv 파일 다운
+![image](https://github.com/user-attachments/assets/140bef7c-9048-4063-8c32-9dd2a844c13d)
 
 ## 에러 관련 경고창
 - /upload -> hdfs csv 파일 올리는데 문제 발생하거나 파일을 선택하지 않으면 경고창 뜸 + csv 파일만 올려야함
