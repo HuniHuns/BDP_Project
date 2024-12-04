@@ -52,7 +52,7 @@ chmod +x /home/maria_dev/delete_old_files.py
 ![image](https://github.com/user-attachments/assets/d0959b4e-491a-4935-80f4-9911fcba9dcd)
 
 ## 에러 관련 경고창
-- /upload -> hdfs csv 파일 올리는데 문제 발생하거나 파일을 선택하지 않으면 경고창 뜸
+- /upload -> hdfs csv 파일 올리는데 문제 발생하거나 파일을 선택하지 않으면 경고창 뜸 + csv 파일만 올려야함
 - /query -> query문 잘못 만들었을 때
 
 ## 실행단계에서 오류가 발생하는 경우 확인해봐야할 것
