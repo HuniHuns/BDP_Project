@@ -3,6 +3,22 @@ async function fetchColumns(table) {
     const data = await response.json();
     return data.columns || [];
 }
+async function processWhereCondition(whereCondition, fromTable, joinTable) {
+    const fromTableColumns = await fetchColumns(fromTable);
+    const joinTableColumns = joinTable ? await fetchColumns(joinTable) : [];
+    const processedCondition = whereCondition.split(/\s+/).map(word => {
+        if (fromTableColumns.includes(word)) {
+            return joinTable ? `t1.${word}` : word;
+        }
+        if (joinTableColumns.includes(word)) {
+            return `t2.${word}`;
+        }
+        return word;
+    }).join(" ");
+    return processedCondition;
+}
+
+
 document.addEventListener("DOMContentLoaded", () => {
     const joinTypeSelect = document.getElementById("join-type");
     const joinTableSelect = document.getElementById("join-table");
@@ -35,7 +51,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function updateSelectColumns() {
         const fromTable = fromTableSelect.value;
-        const columns = await fetchColumns(fromTable);
+        const joinTable = joinTableSelect.value;
+
+        const fromColumns = fromTable ? await fetchColumns(fromTable) : [];
+        const joinColumns = joinTable ? await fetchColumns(joinTable) : [];
+
+        const uniqueJoinColumns = joinColumns.filter(column => !fromColumns.includes(column));
 
         selectColumnsContainer.innerHTML = "";
         if (selectAllCheckbox) {
@@ -54,16 +75,28 @@ document.addEventListener("DOMContentLoaded", () => {
         allLabel.textContent = "All";
         selectColumnsContainer.appendChild(allLabel);
 
-        columns.forEach(column => {
+        fromColumns.forEach(column => {
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
-            checkbox.value = column;
+            checkbox.value = joinTable ? `t1.${column}` : column;
             checkbox.name = "select_columns";
             const label = document.createElement("label");
             label.textContent = column;
             selectColumnsContainer.appendChild(checkbox);
             selectColumnsContainer.appendChild(label);
         });
+
+        uniqueJoinColumns.forEach(column => {
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.value = `t2.${column}`;
+            checkbox.name = "select_columns";
+            const label = document.createElement("label");
+            label.textContent = column;
+            selectColumnsContainer.appendChild(checkbox);
+            selectColumnsContainer.appendChild(label);
+        });
+
         selectAllCheckbox.addEventListener("change", () => {
             const isChecked = selectAllCheckbox.checked;
             const columnCheckboxes = selectColumnsContainer.querySelectorAll("input[type='checkbox']:not(#select-all-columns)");
@@ -80,6 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
+
 
     function updateJoinSections() {
         const joinType = joinTypeSelect.value;
@@ -108,11 +142,14 @@ document.addEventListener("DOMContentLoaded", () => {
             selectElement.appendChild(option);
         }
     }
-    function generateQuery() {
+    async function generateQuery() {
         const fromTable = fromTableSelect.value.trim();
         const joinTable = joinTableSelect.value.trim();
         const joinType = joinTypeSelect.value;
         const whereCondition = document.getElementById("where-condition")?.value.trim() || "";
+
+        const fromAlias = joinTable ? "t1" : "";
+        const joinAlias = "t2";
 
         let query = `SELECT `;
         const selectedColumns = Array.from(selectColumnsContainer.querySelectorAll("input[type='checkbox']:checked"))
@@ -125,29 +162,32 @@ document.addEventListener("DOMContentLoaded", () => {
             query += selectedColumns.join(", ");
         }
         query += ` FROM ${fromTable}`;
-
+        if (fromAlias) {
+            query += ` AS ${fromAlias}`;
+        }
         if (joinTable) {
             if (joinType === "INNER") {
                 if (onCheckbox.checked) {
                     const innerJoinColumn = innerJoinColumnSelect.value.trim();
                     if (innerJoinColumn) {
-                        query += ` JOIN ${joinTable} ON ${fromTable}.${innerJoinColumn} = ${joinTable}.${innerJoinColumn}`;
+                        query += ` JOIN ${joinTable} AS ${joinAlias} ON ${fromAlias}.${innerJoinColumn} = ${joinAlias}.${innerJoinColumn}`;
                     }
                 } else {
-                    query += ` JOIN ${joinTable}`;
+                    query += ` JOIN ${joinTable} AS ${joinAlias}`;
                 }
             } else if (joinType === "OUTER") {
                 const outerJoinType = outerJoinTypeSelect.value;
                 const outerJoinColumn = outerJoinColumnSelect.value.trim();
                 if (outerJoinType && outerJoinColumn) {
-                    query += ` ${outerJoinType.toUpperCase()} OUTER JOIN ${joinTable} ON ${fromTable}.${outerJoinColumn} = ${joinTable}.${outerJoinColumn}`;
+                    query += ` ${outerJoinType.toUpperCase()} OUTER JOIN ${joinTable} AS ${joinAlias} ON ${fromAlias}.${outerJoinColumn} = ${joinAlias}.${outerJoinColumn}`;
                 }
             } else if (joinType === "NATURAL") {
                 query += ` NATURAL JOIN ${joinTable}`;
             }
         }
         if (whereCondition) {
-            query += ` WHERE ${whereCondition}`;
+            const processedCondition = await processWhereCondition(whereCondition, fromTable, joinTable);
+            query += ` WHERE ${processedCondition}`;
         }
 
         queryTextarea.value = query;
@@ -156,6 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         updateSelectColumns();
     }
+
 
     fromTableSelect.addEventListener("change", function () {
         updateSelectColumns();
